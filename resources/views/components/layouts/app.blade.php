@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'E-commerce TALL' }}</title>
 
-    {{-- Padronização de Fontes --}}
+    {{-- Padronizar fontes --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -41,10 +41,8 @@
                     {{-- Se estiver na tela de login, não mostra botão de login, mostra "Voltar para Loja" --}}
                     @if(!request()->routeIs('login'))
                         <a href="{{ route('login') }}" wire:navigate
-                           class="text-sm font-medium text-gray-700 hover:text-indigo-600">Entrar</a>
-                        <a href="{{ route('login') }}" wire:navigate
                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
-                            Criar Conta
+                            Entrar
                         </a>
                     @endif
                 @endauth
@@ -53,7 +51,6 @@
     </div>
 </nav>
 
-{{-- Conteúdo Dinâmico --}}
 <main class="flex-1 w-full">
     {{ $slot }}
 </main>

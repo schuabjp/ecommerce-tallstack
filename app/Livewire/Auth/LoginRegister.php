@@ -8,25 +8,22 @@ use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
-#[Title('Acesso ao E-commerce')]
+#[Title('Acesso ao Sistema')]
 class LoginRegister extends Component
 {
-    // Lógica do componente
     public $isRegisterMode = false;
-    public $isLoggedIn = false; // Este é controlado pelo middleware de rota, mas mantido para a UI inicial
 
-    // Propriedades do formulário (wire:model)
+    // Propriedades do Formulário
     public $name = '';
     public $email = '';
     public $password = '';
-    public $password_confirmation = '';
+    public $password_confirmation = ''; // Necessário para a validação
     public $cpf = '';
 
-    // Metodo que alterna entre as telas de Login e Registro
     public function toggleMode()
     {
         $this->isRegisterMode = !$this->isRegisterMode;
-        $this->reset(['email', 'password', 'password_confirmation', 'name', 'cpf']);
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'cpf']);
         $this->resetValidation();
     }
 
@@ -39,16 +36,18 @@ class LoginRegister extends Component
 
         if (Auth::attempt($credentials)) {
             session()->regenerate();
-            // Redirecionamento usando Livewire Navigation (navigate: true)
             return $this->redirect('/dashboard', navigate: true);
         }
 
-        $this->addError('email', 'As credenciais fornecidas não coincidem com nossos registros.');
+        $this->addError('email', 'E-mail ou senha inválidos.');
     }
 
     public function register()
     {
-        // Validação estrita
+        //Limpeza do CPF (Remove pontos e traços antes de validar)
+        $this->cpf = preg_replace('/[^0-9]/', '', $this->cpf);
+
+        //Validação dos Dados
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -56,30 +55,19 @@ class LoginRegister extends Component
             'password' => 'required|min:8|confirmed',
         ]);
 
+        //Criação no Banco de Dados
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
             'cpf' => $this->cpf,
-            'password' => Hash::make($this->password),
+            'password' => Hash::make($this->password), // Criptografia da senha
         ]);
 
+        //Logar o usuário imediatamente após o cadastro
         Auth::login($user);
 
+        //Redirecionar para o Dashboard
         return $this->redirect('/dashboard', navigate: true);
-    }
-
-    // Metodo para aplicar máscara no CPF em tempo real (opcional, mas melhora UX)
-    public function updatedCpf($value)
-    {
-        // Remove tudo que não for dígito
-        $cleanCpf = preg_replace('/[^0-9]/', '', $value);
-
-        // Aplica a máscara se tiver 11 dígitos
-        if (strlen($cleanCpf) === 11) {
-            $this->cpf = preg_replace('/[^0-9]/', '', $this->cpf);
-        } else {
-            $this->cpf = $cleanCpf;
-        }
     }
 
     public function render()

@@ -11,8 +11,6 @@ Route::get('/', Home::class)->name('home');
 //Rota de Login
 Route::get('/login', LoginRegister::class)->name('login')->middleware('guest');
 
-//Requer Login
 Route::middleware(['auth'])->group(function () {
-    // Só é acessível se o usuário passar pelo middleware 'auth'
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 });
