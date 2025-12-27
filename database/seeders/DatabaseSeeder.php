@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Criar o SUPER ADMIN
+        \App\Models\User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@loja.com',
+            'password' => Hash::make('password'),
+            'role' => \App\Enums\UserRole::ADMIN,
+            'document' => '00000000000',
         ]);
+
+        // Criar produtos falsos
+        \App\Models\Product::factory(50)->create();
     }
 }

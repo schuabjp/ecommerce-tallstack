@@ -13,6 +13,9 @@ class LoginRegister extends Component
 {
     public $isRegisterMode = false;
 
+    public $role = 'customer';
+    public $document = '';
+
     // Propriedades do Formulário
     public $name = '';
     public $email = '';
@@ -44,23 +47,29 @@ class LoginRegister extends Component
 
     public function register()
     {
-        //Limpeza do CPF (Remove pontos e traços antes de validar)
-        $this->cpf = preg_replace('/[^0-9]/', '', $this->cpf);
-
-        //Validação dos Dados
-        $validated = $this->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'cpf' => 'required|digits:11|unique:users,cpf',
+        // Validação condicional
+        $rules = [
+            'name' => 'required|min:3',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
-        ]);
+            'role' => 'required|in:customer,seller', // Garante que ninguém force 'admin' via Inspecionar Elemento
+        ];
 
-        //Criação no Banco de Dados
+        // Se for vendedor, documento é obrigatório. Se cliente, CPF obrigatório.
+        if ($this->role === 'seller') {
+            $rules['document'] = 'required|min:11|max:18';
+        } else {
+            $rules['document'] = 'required|digits:11';
+        }
+
+        $this->validate($rules);
+
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
-            'cpf' => $this->cpf,
-            'password' => Hash::make($this->password), // Criptografia da senha
+            'password' => Hash::make($this->password),
+            'role' => $this->role, // O cast do Model converte string para Enum
+            'document' => preg_replace('/[^0-9]/', '', $this->document),
         ]);
 
         //Logar o usuário imediatamente após o cadastro
