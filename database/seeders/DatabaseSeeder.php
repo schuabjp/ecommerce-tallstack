@@ -2,30 +2,30 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Product; // <--- Importante
+use Illuminate\Support\Facades\Hash;
+use App\Enums\UserRole; // <--- Importante
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Criar o SUPER ADMIN
-        \App\Models\User::create([
-            'name' => 'Super Admin',
+        // 1. Cria o SEU usuário Admin (para você conseguir logar)
+        User::create([
+            'name' => 'Admin Supremo',
             'email' => 'admin@loja.com',
-            'password' => Hash::make('password'),
-            'role' => \App\Enums\UserRole::ADMIN,
+            'password' => Hash::make('password'), // Senha: password
             'document' => '00000000000',
+            'role' => UserRole::ADMIN,
         ]);
 
-        // Criar produtos falsos
-        \App\Models\Product::factory(50)->create();
+        // 2. Cria 10 usuários normais
+        User::factory(10)->create();
+
+        // 3. Cria 50 Produtos
+        // A Factory do produto já vincula a um usuário existente aleatório ou cria um novo
+        Product::factory(50)->create();
     }
 }

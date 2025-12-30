@@ -1,20 +1,32 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Livewire\Home;
 use App\Livewire\Auth\LoginRegister;
 use App\Livewire\Dashboard;
-use App\Livewire\Home;
-use App\Livewire\ProductList; // <--- IMPORTANTE: Importar o componente
-use Illuminate\Support\Facades\Route;
+use App\Livewire\ProductList; // A Lista (Tabela)
+use App\Livewire\ProductForm; // O Formulário (Criar e Editar)
 
-//Rota Raiz/Pública
+//Vitrine
 Route::get('/', Home::class)->name('home');
 
-// Rotas de Autenticação (Login e Registro)
+
+//Guest
 Route::get('/login', LoginRegister::class)->name('login')->middleware('guest');
 
+
+//(Auth)
 Route::middleware(['auth'])->group(function () {
-    
-    // Dashboard
+
+    // Painel
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/produtos', ProductList::class)->name('products.index'); 
+
+    //Read
+    Route::get('/produtos', ProductList::class)->name('products.index');
+
+    //Create
+    Route::get('/produtos/novo', ProductForm::class)->name('products.create');
+
+    //Update
+    Route::get('/produtos/{product}/editar', ProductForm::class)->name('products.edit');
 });
