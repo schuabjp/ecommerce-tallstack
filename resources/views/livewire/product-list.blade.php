@@ -22,8 +22,7 @@
         @endif
     </div>
 
-    {{-- 2. Mensagem de Sucesso (Flash Message) --}}
-    {{-- Aparece quando redirecionamos vindo do formulário ou excluímos um item --}}
+    {{-- 2. Mensagem de Sucesso --}}
     @if (session()->has('message'))
     <div
         class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm flex justify-between items-center">
@@ -31,7 +30,6 @@
             <p class="font-bold">Sucesso!</p>
             <p>{{ session('message') }}</p>
         </div>
-        {{-- Botãozinho para fechar a mensagem (opcional, via AlpineJS seria melhor, mas aqui é visual) --}}
         <span class="text-2xl">&times;</span>
     </div>
     @endif
@@ -71,7 +69,6 @@
     </div>
 
     {{-- 4. Grid de Produtos --}}
-    {{-- Usamos @forelse em vez de @foreach para lidar com lista vazia --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($products as $product)
         <div
@@ -126,7 +123,7 @@
 
                         {{-- Botão EXCLUIR (Com confirmação nativa do Livewire) --}}
                         <button wire:click="delete({{ $product->id }})"
-                            wire:confirm="Tem certeza absoluta que deseja excluir o produto '{{ $product->name }}'?"
+                            wire:confirm="AÇÃO IRREVERSÍVEL: Tem certeza absoluta que deseja excluir o produto '{{ $product->name }}'?"
                             class="flex items-center justify-center gap-1 bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold hover:bg-red-100 transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
