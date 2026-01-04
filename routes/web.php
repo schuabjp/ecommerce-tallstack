@@ -1,19 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Livewire\Home;
+declare(strict_types=1);
+
 use App\Livewire\Auth\LoginRegister;
 use App\Livewire\Dashboard;
+use App\Livewire\Home;
+use App\Livewire\ProductForm;
 use App\Livewire\ProductList; // A Lista (Tabela)
-use App\Livewire\ProductForm; // O Formulário (Criar e Editar)
+use Illuminate\Support\Facades\Route; // O Formulário (Criar e Editar)
 
 //Vitrine
 Route::get('/', Home::class)->name('home');
 
-
 //Guest
 Route::get('/login', LoginRegister::class)->name('login')->middleware('guest');
-
 
 //(Auth)
 Route::middleware(['auth'])->group(function () {

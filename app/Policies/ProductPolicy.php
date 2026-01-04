@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Product;
 use App\Models\User;
-use App\Enums\UserRole;
 
 class ProductPolicy
 {
@@ -26,6 +28,7 @@ class ProductPolicy
         if ($user->role === UserRole::ADMIN) {
             return true;
         }
+
         // Vendedor só edita o produto que ELE criou
         return $user->role === UserRole::SELLER && $product->user_id === $user->id;
     }

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
-use App\Models\Product;
 use App\Enums\UserRole;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth;
 
 class ProductList extends Component
 {
@@ -14,7 +16,9 @@ class ProductList extends Component
 
     // Filtros (conectados via wire:model no HTML)
     public $search = '';
+
     public $minPrice = '';
+
     public $maxPrice = '';
 
     // Reseta a paginação para a página 1 se o usuário digitar algo na busca
@@ -36,7 +40,6 @@ class ProductList extends Component
 
     public function render()
     {
-        // Query Builder: Montando a consulta ao banco
         $query = Product::query();
 
         // 1. Filtro de Nome
@@ -56,7 +59,7 @@ class ProductList extends Component
 
         // Ordena por mais recente e pagina de 10 em 10
         return view('livewire.product-list', [
-            'products' => $query->latest()->paginate(10)
+            'products' => $query->latest()->paginate(10),
         ]);
     }
 }

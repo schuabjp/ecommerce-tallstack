@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum UserRole: string
@@ -11,8 +13,8 @@ enum UserRole: string
     public function label(): string
     {
         return match ($this) {
-            self::ADMIN => 'Administrador',
-            self::SELLER => 'Vendedor',
+            self::ADMIN    => 'Administrador',
+            self::SELLER   => 'Vendedor',
             self::CUSTOMER => 'Cliente',
         };
     }

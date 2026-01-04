@@ -1,23 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Product;
-use Livewire\Component;
-use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
-#[Title('Produto')]
 class ProductForm extends Component
 {
-    // Se tiver ID, é edição. Se for null, é criação.
+    use WithFileUploads;
+
     public ?Product $product = null;
 
     public $name = '';
+
     public $description = '';
+
     public $price = '';
 
-    public function mount(Product $product = null)
+    #[Validate('nullable|image|max:1024|mimes:jpg,jpeg,png')]
+    public $photo = null;
+
+    public function mount(?Product $product = null)
     {
         if ($product && $product->exists) {
             $this->product = $product;
@@ -29,37 +37,48 @@ class ProductForm extends Component
 
     public function save()
     {
-        // Validação
         $this->validate([
-            'name' => 'required|min:3',
+            'name'        => 'required|min:3',
             'description' => 'required',
-            'price' => 'required|numeric|min:1',
+            'price'       => 'required|numeric|min:1',
         ]);
 
-        // Se $this->product existe, atualiza ele. Se não, cria um novo.
+        $imagePath = null;
+
+        if ($this->photo) {
+            $imagePath = $this->photo->store('products', 'public');
+            $imagePath = '/storage/' . $imagePath;
+        }
+
         if ($this->product && $this->product->exists) {
-            // MODO EDIÇÃO
-            // Verifica se o usuário é admin ou criador do produto
-            $this->authorize('update', $this->product);
+            // --- MODO EDIÇÃO ---
 
-            $this->product->update([
-                'name' => $this->name,
+            $data = [
+                'name'        => $this->name,
                 'description' => $this->description,
-                'price' => $this->price,
-            ]);
+                'price'       => $this->price,
+            ];
 
-            session()->flash('message', 'Produto atualizado com sucesso!');
+            // Só atualiza a imagem se o usuário tiver enviado uma nova
+            if ($imagePath) {
+                $data['image'] = $imagePath;
+            }
+
+            $this->product->update($data);
+            session()->flash('message', 'Produto atualizado!');
         } else {
-            // MODO CRIAÇÃO
+
+            // --- MODO CRIAÇÃO ---
             Product::create([
-                'name' => $this->name,
+                'name'        => $this->name,
                 'description' => $this->description,
-                'price' => $this->price,
-                'user_id' => Auth::id(),
-                'image' => 'https://placehold.co/600x400',
+                'price'       => $this->price,
+                'user_id'     => Auth::id(),
+                // Se enviou foto, usa ela. Se não, usa uma padrão.
+                'image'       => $imagePath ?? 'https://placehold.co/600x400?text=Sem+Imagem',
             ]);
 
-            session()->flash('message', 'Produto criado com sucesso!');
+            session()->flash('message', 'Produto criado!');
         }
 
         return $this->redirectRoute('products.index', navigate: true);
@@ -67,6 +86,11 @@ class ProductForm extends Component
 
     public function render()
     {
-        return view('livewire.product-form');
+        // Define o título dinamicamente
+        $pageTitle = $this->product ? 'Editar Produto' : 'Novo Produto';
+
+        return view('livewire.product-form', [
+            'title' => $pageTitle,
+        ]);
     }
 }

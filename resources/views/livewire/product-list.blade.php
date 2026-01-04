@@ -7,9 +7,7 @@
         </h2>
 
         {{-- LÓGICA DE PERMISSÃO:
-        Só mostramos o botão se for Vendedor (Seller) ou Admin.
-        O Cliente (Customer) não vê isso.
-        --}}
+        Só mostramos o botão se for Vendedor (Seller) ou Admin. O Cliente (Customer) não vê isso.--}}
         @if(auth()->user()->role === \App\Enums\UserRole::SELLER || auth()->user()->role === \App\Enums\UserRole::ADMIN)
         <a href="{{ route('products.create') }}" wire:navigate
             class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-medium shadow-sm">

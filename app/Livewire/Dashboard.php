@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Minha Área')]
 class Dashboard extends Component
@@ -21,6 +23,7 @@ class Dashboard extends Component
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+
         return $this->redirect('/login', navigate: true);
     }
 
