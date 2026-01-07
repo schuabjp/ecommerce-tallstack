@@ -37,11 +37,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produtos/{product}/editar', ProductForm::class)->name('products.edit');
 
     //Category Management - Read
-    Route::get('/categories', ProductList::class)->name('categories.index');
+    Route::get('/categories', Category::class)->name('categories.index');
 
     //Category Management - Create
-    Route::get('/categories/novo', ProductForm::class)->name('categories.create');
+    Route::get('/categories/novo', Category::class)->name('categories.create');
 
     //Category Management - Update
-    Route::get('/categories/{category}/editar', ProductForm::class)->name('categories.edit');
+    Route::get('/categories/{category}/editar', Category::class)->name('categories.edit');
 });

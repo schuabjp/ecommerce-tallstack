@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Component;
 
-class Category extends Model
+class Category extends Component
 {
     protected $table = 'categories';
 
