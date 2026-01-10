@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 use App\Livewire\Auth\LoginRegister;
+use App\Livewire\CategoryList;
 use App\Livewire\Dashboard;
 use App\Livewire\Home;
-use App\Livewire\ProductForm;
-use App\Livewire\ProductList; // A Lista (Tabela)
+use App\Livewire\ProductForm; // A Lista (Tabela)
+use App\Livewire\ProductList;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route; // O Formulário (Criar e Editar)
 
@@ -36,12 +37,14 @@ Route::middleware(['auth'])->group(function () {
     //Products - Update
     Route::get('/produtos/{product}/editar', ProductForm::class)->name('products.edit');
 
+    Route::get('/categorias', CategoryList::class)->name('categories.index');
+
     //Category Management - Read
-    Route::get('/categories', Category::class)->name('categories.index');
+    //Route::get('/categories', Category::class)->name('categories.index');
 
     //Category Management - Create
-    Route::get('/categories/novo', Category::class)->name('categories.create');
+    //Route::get('/categories/novo', Category::class)->name('categories.create');
 
     //Category Management - Update
-    Route::get('/categories/{category}/editar', Category::class)->name('categories.edit');
+    //Route::get('/categories/{category}/editar', Category::class)->name('categories.edit');
 });
