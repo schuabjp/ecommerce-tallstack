@@ -38,13 +38,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produtos/{product}/editar', ProductForm::class)->name('products.edit');
 
     Route::get('/categorias', CategoryList::class)->name('categories.index');
-
-    //Category Management - Read
-    //Route::get('/categories', Category::class)->name('categories.index');
-
-    //Category Management - Create
-    //Route::get('/categories/novo', Category::class)->name('categories.create');
-
-    //Category Management - Update
-    //Route::get('/categories/{category}/editar', Category::class)->name('categories.edit');
 });

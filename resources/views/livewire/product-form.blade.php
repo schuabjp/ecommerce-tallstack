@@ -21,6 +21,27 @@
                 @error('price') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
 
+            {{-- Categoria --}}
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Categoria</label>
+
+                <select wire:model="category_id"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Selecione uma categoria...</option>
+
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}">
+                        {{ $category->name }}
+                    </option>
+                    @endforeach
+
+                </select>
+
+                @error('category_id')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+            </div>
+
             {{-- Descrição --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Descrição</label>
@@ -74,7 +95,7 @@
                     </div>
                 </div>
             </div>
-            {{-- Botões --}}    
+            {{-- Botões --}}
             <div class="flex justify-end gap-3">
                 <a href="{{ route('products.index') }}" wire:navigate
                     class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">

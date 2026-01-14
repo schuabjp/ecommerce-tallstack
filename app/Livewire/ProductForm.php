@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
@@ -22,16 +23,25 @@ class ProductForm extends Component
 
     public $price = '';
 
+    public $categories = [];
+
+    public $category_name = '';
+
+    public $category_id = '';
+
     #[Validate('nullable|image|max:1024|mimes:jpg,jpeg,png')]
     public $photo = null;
 
     public function mount(?Product $product = null)
     {
+        $this->categories = Category::all();
+
         if ($product && $product->exists) {
             $this->product = $product;
             $this->name = $product->name;
             $this->description = $product->description;
             $this->price = $product->price;
+            $this->category_id = $product->category_id;
         }
     }
 
@@ -41,6 +51,7 @@ class ProductForm extends Component
             'name'        => 'required|min:3',
             'description' => 'required',
             'price'       => 'required|numeric|min:1',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $imagePath = null;
@@ -52,7 +63,6 @@ class ProductForm extends Component
 
         if ($this->product && $this->product->exists) {
             // --- MODO EDIÇÃO ---
-
             $data = [
                 'name'        => $this->name,
                 'description' => $this->description,
@@ -64,24 +74,27 @@ class ProductForm extends Component
                 $data['image'] = $imagePath;
             }
 
-            $this->product->update($data);
+            $this->product->update([
+                'name'        => $this->name,
+                'description' => $this->description,
+                'price'       => $this->price,
+                'image'       => $imagePath ?? $this->product->image,
+                'category_id' => $this->category_id, // <--- Salvar Categoria
+            ]);
+
             session()->flash('message', 'Produto atualizado!');
         } else {
-
-            // --- MODO CRIAÇÃO ---
             Product::create([
                 'name'        => $this->name,
                 'description' => $this->description,
                 'price'       => $this->price,
+                'image'       => $imagePath ?? '...',
                 'user_id'     => Auth::id(),
-                // Se enviou foto, usa ela. Se não, usa uma padrão.
-                'image'       => $imagePath ?? 'https://placehold.co/600x400?text=Sem+Imagem',
+                'category_id' => $this->category_id, // <--- Salvar Categoria
             ]);
 
             session()->flash('message', 'Produto criado!');
         }
-
-        return $this->redirectRoute('products.index', navigate: true);
     }
 
     public function render()
