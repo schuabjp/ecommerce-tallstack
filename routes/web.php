@@ -2,21 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
-// Importando seus componentes EXATOS (baseado nos arquivos que você enviou)
 use App\Livewire\ProductList;
 use App\Livewire\ProductForm;
 use App\Livewire\CategoryList;
-use App\Livewire\Dashboard;         
+use App\Livewire\Dashboard;
+use App\Livewire\Home;
 use App\Livewire\Auth\LoginRegister;
+use App\Livewire\Admin\PromotionManager;
 
-// Rota Inicial (Loja)
-Route::get('/', ProductList::class)->name('home');
+// 1. Home Page (Vitrine de Promoções)
+Route::get('/', Home::class)->name('home');
 
-// Rota de Login (Usa seu LoginRegister.php)
+// 2. Login e Logout
 Route::get('/login', LoginRegister::class)->name('login');
-
-// Rota de Logout
 Route::get('/logout', function () {
     Auth::logout();
     session()->invalidate();
@@ -24,17 +22,14 @@ Route::get('/logout', function () {
     return redirect('/');
 })->name('logout');
 
-// --- ÁREA RESTRITA ---
+// 3. Área Logada
 Route::middleware(['auth', 'verified'])->group(function () {
-    
-    // AQUI ESTAVA O ERRO: Agora aponta para a classe Dashboard que você JÁ TEM
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
-
-    // Produtos
     Route::get('/produtos', ProductList::class)->name('products.index');
     Route::get('/produtos/novo', ProductForm::class)->name('products.create');
     Route::get('/produtos/{product}/editar', ProductForm::class)->name('products.edit');
-
-    // Categorias
     Route::get('/categorias', CategoryList::class)->name('categories.index');
+
+    // 4. Rota do Admin (Promoções)
+    Route::get('/admin/promocoes', PromotionManager::class)->name('admin.promotions');
 });
