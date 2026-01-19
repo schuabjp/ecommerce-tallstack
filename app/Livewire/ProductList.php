@@ -4,37 +4,37 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Enums\UserRole;
+use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithPagination;
+use Livewire\WithPagination; // <--- Não esqueça de importar
 
 class ProductList extends Component
 {
-    use WithPagination; // Habilita paginação sem recarregar página
+    use WithPagination;
 
-    // Filtros (conectados via wire:model no HTML)
     public $search = '';
 
-    public $minPrice = '';
+    public $category_id = ''; // Filtro de categoria
 
-    public $maxPrice = '';
-
-    // Reseta a paginação para a página 1 se o usuário digitar algo na busca
+    // Reinicia a paginação quando filtra
     public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCategoryId()
     {
         $this->resetPage();
     }
 
     public function delete($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
-        // Verifica se o usuário pode excluir (Admin ou Dono do produto)
-        // Como ainda não criamos Policies complexas, vamos fazer uma verificação simples aqui
-        if (Auth::user()->role === UserRole::ADMIN || Auth::user()->id === $product->user_id) {
+        if ($product) {
             $product->delete();
+            session()->flash('message', 'Produto excluído.');
         }
     }
 
@@ -42,24 +42,20 @@ class ProductList extends Component
     {
         $query = Product::query();
 
-        // 1. Filtro de Nome
+        // Filtro de Texto
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
         }
 
-        // 2. Filtro de Preço Mínimo
-        if ($this->minPrice) {
-            $query->where('price', '>=', $this->minPrice);
+        // Filtro de Categoria
+        if ($this->category_id) {
+            $query->where('category_id', $this->category_id);
         }
 
-        // 3. Filtro de Preço Máximo
-        if ($this->maxPrice) {
-            $query->where('price', '<=', $this->maxPrice);
-        }
-
-        // Ordena por mais recente e pagina de 10 em 10
         return view('livewire.product-list', [
-            'products' => $query->latest()->paginate(10),
+            'products'   => $query->latest()->paginate(9),
+            // Passamos as categorias para preencher o select de filtro
+            'categories' => Category::all(),
         ]);
     }
 }

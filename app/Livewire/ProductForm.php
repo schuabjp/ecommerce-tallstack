@@ -17,32 +17,75 @@ class ProductForm extends Component
 
     public ?Product $product = null;
 
+    // --- Campos do Produto ---
     public $name = '';
 
     public $description = '';
 
     public $price = '';
 
-    public $categories = [];
-
-    public $category_name = '';
-
-    public $category_id = '';
-
     #[Validate('nullable|image|max:1024|mimes:jpg,jpeg,png')]
     public $photo = null;
 
+    // --- Campos da Categoria ---
+    public $categories = []; // Lista para o <select>
+
+    #[Validate('required|exists:categories,id')]
+    public $category_id = ''; // O ID selecionado
+
+    // --- Campos para NOVA Categoria (Modal) ---
+    public $newCategoryName = '';
+
+    public $newCategoryColor = '#3b82f6'; // Azul padrão
+
     public function mount(?Product $product = null)
     {
+        // 1. Carrega todas as categorias para o select
         $this->categories = Category::all();
 
+        // 2. Se for edição, preenche os campos
         if ($product && $product->exists) {
             $this->product = $product;
             $this->name = $product->name;
             $this->description = $product->description;
             $this->price = $product->price;
-            $this->category_id = $product->category_id;
+            $this->category_id = $product->category_id; // Seleciona a categoria atual
         }
+    }
+
+    // Método exclusivo para criar categoria sem sair da tela
+    public function createCategory()
+    {
+        // Segurança: Apenas Admin pode criar
+        if (Auth::user()->role !== 'admin') {
+            $this->addError('newCategoryName', 'Apenas admins podem criar categorias.');
+
+            return;
+        }
+
+        $this->validate([
+            'newCategoryName'  => 'required|string|min:3|max:255',
+            'newCategoryColor' => 'required|string',
+        ]);
+
+        // Cria a categoria
+        $category = Category::create([
+            'name'    => $this->newCategoryName,
+            'color'   => $this->newCategoryColor,
+            'user_id' => Auth::id(),
+        ]);
+
+        // Atualiza a lista e seleciona a nova
+        $this->categories = Category::all();
+        $this->category_id = $category->id;
+
+        // Reseta os campos da modal
+        $this->reset(['newCategoryName', 'newCategoryColor']);
+
+        // Avisa o front-end para fechar a modal
+        $this->dispatch('category-created');
+
+        session()->flash('message', 'Categoria criada!');
     }
 
     public function save()
@@ -50,60 +93,47 @@ class ProductForm extends Component
         $this->validate([
             'name'        => 'required|min:3',
             'description' => 'required',
-            'price'       => 'required|numeric|min:1',
-            'category_id' => 'required|exists:categories,id',
+            'price'       => 'required|numeric|min:1|max:999999',
+            // category_id e photo já são validados pelos atributos
         ]);
 
+        // Lógica da Imagem
         $imagePath = null;
 
         if ($this->photo) {
-            $imagePath = $this->photo->store('products', 'public');
-            $imagePath = '/storage/' . $imagePath;
+            $imagePath = '/storage/' . $this->photo->store('products', 'public');
         }
 
-        if ($this->product && $this->product->exists) {
-            // --- MODO EDIÇÃO ---
-            $data = [
-                'name'        => $this->name,
-                'description' => $this->description,
-                'price'       => $this->price,
-            ];
+        // Dados base
+        $data = [
+            'name'        => $this->name,
+            'description' => $this->description,
+            'price'       => $this->price,
+            'category_id' => $this->category_id,
+        ];
 
-            // Só atualiza a imagem se o usuário tiver enviado uma nova
+        if ($this->product && $this->product->exists) {
+            // Edição
             if ($imagePath) {
                 $data['image'] = $imagePath;
             }
-
-            $this->product->update([
-                'name'        => $this->name,
-                'description' => $this->description,
-                'price'       => $this->price,
-                'image'       => $imagePath ?? $this->product->image,
-                'category_id' => $this->category_id, // <--- Salvar Categoria
-            ]);
-
+            $this->product->update($data);
             session()->flash('message', 'Produto atualizado!');
         } else {
-            Product::create([
-                'name'        => $this->name,
-                'description' => $this->description,
-                'price'       => $this->price,
-                'image'       => $imagePath ?? '...',
-                'user_id'     => Auth::id(),
-                'category_id' => $this->category_id, // <--- Salvar Categoria
-            ]);
-
+            // Criação
+            $data['user_id'] = Auth::id();
+            $data['image'] = $imagePath ?? 'https://placehold.co/600x400?text=Sem+Foto';
+            Product::create($data);
             session()->flash('message', 'Produto criado!');
         }
+
+        return $this->redirectRoute('products.index', navigate: true);
     }
 
     public function render()
     {
-        // Define o título dinamicamente
-        $pageTitle = $this->product ? 'Editar Produto' : 'Novo Produto';
-
         return view('livewire.product-form', [
-            'title' => $pageTitle,
+            'title' => $this->product ? 'Editar Produto' : 'Novo Produto',
         ]);
     }
 }

@@ -21,19 +21,17 @@ class LoginRegister extends Component
 
     // Propriedades do Formulário
     public $name = '';
-
     public $email = '';
-
     public $password = '';
-
-    public $password_confirmation = ''; // Necessário para a validação
+    public $password_confirmation = ''; // Necessário para a validação confirmed
 
     public $cpf = '';
 
     public function toggleMode()
     {
         $this->isRegisterMode = ! $this->isRegisterMode;
-        $this->reset(['name', 'email', 'password', 'password_confirmation', 'cpf']);
+        // Limpa os campos ao trocar entre Login e Cadastro
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'cpf', 'document']);
         $this->resetValidation();
     }
 
@@ -47,7 +45,8 @@ class LoginRegister extends Component
         if (Auth::attempt($credentials)) {
             session()->regenerate();
 
-            return $this->redirect('/dashboard', navigate: true);
+            // AJUSTE: Redireciona para a Home (Loja) em vez do Dashboard
+            return $this->redirect('/', navigate: true);
         }
 
         $this->addError('email', 'E-mail ou senha inválidos.');
@@ -60,14 +59,14 @@ class LoginRegister extends Component
             'name'     => 'required|min:3',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
-            'role'     => 'required|in:customer,seller', // Garante que ninguém force 'admin' via Inspecionar Elemento
+            'role'     => 'required|in:customer,seller', // Segurança contra injeção de admin
         ];
 
-        // Se for vendedor, documento é obrigatório. Se cliente, CPF obrigatório.
+        // Se for vendedor, valida documento (CNPJ/CPF). Se cliente, valida CPF.
         if ($this->role === 'seller') {
             $rules['document'] = 'required|min:11|max:18';
         } else {
-            $rules['document'] = 'required|digits:11';
+            $rules['document'] = 'required|min:11|max:14';
         }
 
         $this->validate($rules);
@@ -76,15 +75,16 @@ class LoginRegister extends Component
             'name'     => $this->name,
             'email'    => $this->email,
             'password' => Hash::make($this->password),
-            'role'     => $this->role, // O cast do Model converte string para Enum
+            'role'     => $this->role, 
+            // Limpa caracteres não numéricos do documento
             'document' => preg_replace('/[^0-9]/', '', $this->document),
         ]);
 
-        //Logar o usuário imediatamente após o cadastro
+        // Logar o usuário imediatamente após o cadastro
         Auth::login($user);
 
-        //Redirecionar para o Dashboard
-        return $this->redirect('/dashboard', navigate: true);
+        // AJUSTE: Redireciona para a Home (Loja)
+        return $this->redirect('/', navigate: true);
     }
 
     public function render()
