@@ -21,8 +21,11 @@ class LoginRegister extends Component
 
     // Propriedades do Formulário
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $password_confirmation = ''; // Necessário para a validação confirmed
 
     public $cpf = '';
@@ -75,7 +78,7 @@ class LoginRegister extends Component
             'name'     => $this->name,
             'email'    => $this->email,
             'password' => Hash::make($this->password),
-            'role'     => $this->role, 
+            'role'     => $this->role,
             // Limpa caracteres não numéricos do documento
             'document' => preg_replace('/[^0-9]/', '', $this->document),
         ]);

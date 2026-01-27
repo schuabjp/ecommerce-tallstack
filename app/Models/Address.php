@@ -7,27 +7,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Address extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'image',
-        'discount_percentage',
         'user_id',
-        'category_id',
+        'name',
+        'cep',
+        'street',
+        'number',
+        'complement',
+        'neighborhood',
+        'city',
+        'state',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
     }
 }

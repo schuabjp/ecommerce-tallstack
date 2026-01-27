@@ -14,14 +14,20 @@ return new class() extends Migration {
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Quem cadastrou
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->decimal('price', 10, 2);
-            $table->string('category')->nullable();
             $table->string('image')->nullable();
+            $table->integer('discount_percentage')->default(0);
+
+            // --- CHAVES ESTRANGEIRAS (AQUI ESTÁ A MÁGICA) ---
+
+            // 1. Relaciona com Usuário (Dono do produto)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            // 2. Relaciona com Categoria
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

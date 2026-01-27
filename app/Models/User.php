@@ -6,14 +6,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Importante
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notifiable; // Se estiver usando Enums
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
@@ -21,20 +20,20 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
-        'document',
         'password',
+        'document',
         'role',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -50,9 +49,13 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed', // converte senha em hash
-
-            'role'              => UserRole::class,
+            'password'          => 'hashed',
+            'role'              => UserRole::class, // Casting do Enum
         ];
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }

@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Admin;
 
-use App\Models\Product;
 use App\Enums\UserRole;
-use Livewire\Component;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 // 1. IMPORTANTE: Importar a Facade Auth para o VS Code não reclamar
-use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class PromotionManager extends Component
 {
     public $product_id = '';
+
     public $discount_percentage = '';
 
     public function save()
@@ -23,7 +26,7 @@ class PromotionManager extends Component
         }
 
         $this->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_id'          => 'required|exists:products,id',
             'discount_percentage' => 'required|integer|min:1|max:90',
         ]);
 
@@ -39,7 +42,9 @@ class PromotionManager extends Component
     public function remove($id)
     {
         // CORREÇÃO AQUI TAMBÉM
-        if (Auth::user()->role !== UserRole::ADMIN) abort(403);
+        if (Auth::user()->role !== UserRole::ADMIN) {
+            abort(403);
+        }
 
         Product::find($id)->update(['discount_percentage' => 0]);
         session()->flash('message', 'Promoção removida.');
@@ -49,10 +54,10 @@ class PromotionManager extends Component
     public function render()
     {
         return view('livewire.admin.promotion-manager', [
-            'products' => Product::all(),
+            'products'         => Product::all(),
             'activePromotions' => Product::where('discount_percentage', '>', 0)
                 ->latest('updated_at')
-                ->get()
+                ->get(),
         ]);
     }
 }

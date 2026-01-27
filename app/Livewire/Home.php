@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\Product; // <--- Importante
+use App\Models\Category;
+use App\Models\Product;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -13,14 +14,14 @@ class Home extends Component
 {
     public function render()
     {
-        // Busca produtos com desconto
-        $promotions = Product::where('discount_percentage', '>', 0)
-            ->latest('updated_at')
-            ->take(10)
-            ->get();
-
         return view('livewire.home', [
-            'promotions' => $promotions
+            // Promoções
+            'promotions' => Product::where('discount_percentage', '>', 0)
+                ->latest('updated_at')->take(4)->get(),
+            // Categorias para a Home
+            'categories' => Category::withCount('products')->take(4)->get(),
+            // Produtos Recentes
+            'recent'     => Product::latest()->take(8)->get(),
         ]);
     }
 }

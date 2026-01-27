@@ -1,24 +1,40 @@
-<div class="min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
 
-    {{-- Elemento Root Único do Livewire --}}
-    <div class="max-w-md w-full space-y-8" wire:key="auth-container">
+    {{-- Efeitos de Fundo --}}
+    <div
+        class="absolute top-0 left-1/4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob dark:bg-purple-900 dark:mix-blend-normal">
+    </div>
+    <div
+        class="absolute top-0 right-1/4 w-72 h-72 bg-brand-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 dark:bg-brand-900 dark:mix-blend-normal">
+    </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+    <div class="max-w-md w-full space-y-8 relative z-10" wire:key="auth-container">
 
-            {{-- Cabeçalho do Card --}}
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-900">
-                    {{ $isRegisterMode ? 'Criar Nova Conta' : 'Acesse sua Conta' }}
+        <div
+            class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700">
+
+            {{-- Cabeçalho --}}
+            <div class="text-center mb-10">
+                <div
+                    class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 mb-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.131A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.2-2.85.591-4.162m0 0A9.015 9.015 0 0112 3c1.929 0 3.716.46 5.341 1.252">
+                        </path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white">
+                    {{ $isRegisterMode ? 'Criar Conta' : 'Bem-vindo' }}
                 </h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    {{ $isRegisterMode ? 'Preencha os dados completos abaixo' : 'Bem-vindo de volta à Loja TALL' }}
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ $isRegisterMode ? 'Junte-se a nós hoje mesmo' : 'Acesse para gerenciar suas compras' }}
                 </p>
             </div>
 
-            {{-- Exibição Geral de Erros --}}
             @if ($errors->any())
-            <div class="bg-red-50 text-red-500 p-4 rounded-lg mb-6 text-sm border border-red-100">
-                <p class="font-bold mb-1">Verifique os erros abaixo:</p>
+            <div
+                class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl mb-6 text-sm border border-red-100 dark:border-red-800 animate-pulse">
+                <p class="font-bold mb-1">Atenção:</p>
                 <ul class="list-disc list-inside">
                     @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -27,117 +43,86 @@
             </div>
             @endif
 
-            {{-- MODO LOGIN --}}
-            @if(!$isRegisterMode)
-            <form wire:submit="login" class="space-y-6">
+            {{-- LOGIN FORM --}}
+            @if (!$isRegisterMode)
+            <form wire:submit="login" class="space-y-5">
                 <div>
-                    <label for="login_email" class="block text-sm font-medium text-gray-700">E-mail</label>
-                    <input type="email" id="login_email" wire:model.blur="email"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="seu@email.com">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mail</label>
+                    <input type="email" wire:model="email"
+                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-brand-500 transition">
                 </div>
                 <div>
-                    <label for="login_password" class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" id="login_password" wire:model.blur="password"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="••••••••">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Senha</label>
+                    <input type="password" wire:model="password"
+                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-brand-500 transition">
                 </div>
 
                 <button type="submit"
-                    class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove>Entrar</span>
+                    class="w-full bg-brand-600 text-white py-3 rounded-xl font-bold hover:bg-brand-700 transition shadow-lg shadow-brand-500/30 transform hover:-translate-y-0.5">
+                    <span wire:loading.remove>Entrar no Sistema</span>
                     <span wire:loading>Validando...</span>
                 </button>
             </form>
 
-            {{-- MODO REGISTRO (COMPLETO) --}}
+            {{-- REGISTER FORM --}}
             @else
             <form wire:submit="register" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Conta</label>
+                        <select wire:model.live="role"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <option value="customer">Sou Cliente</option>
+                            <option value="seller">Sou Vendedor</option>
+                        </select>
+                    </div>
 
-                {{-- Campo: Nome Completo --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nome Completo</label>
-                    <input type="text" wire:model.blur="name"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="Ex: João da Silva">
-                    @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome Completo</label>
+                        <input type="text" wire:model="name"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
 
-                {{-- Campo: Tipo de Conta --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Eu quero:</label>
-                    {{-- wire:model.live é ESSENCIAL aqui para atualizar o label do documento em tempo real --}}
-                    <select wire:model.live="role"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                        <option value="customer">Comprar (Cliente)</option>
-                        <option value="seller">Vender (Vendedor)</option>
-                    </select>
-                </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                        <input type="email" wire:model="email"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
 
-                {{-- Campo UNIFICADO: Documento --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                        {{ $role === 'seller' ? 'CPF ou CNPJ' : 'CPF' }}
-                    </label>
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">CPF /
+                            Documento</label>
+                        <input type="text" wire:model="document"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
 
-                    <input type="text" wire:model.blur="document" maxlength="18"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="{{ $role === 'seller' ? 'Apenas números' : '000.000.000-00' }}">
-                    @error('document') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
+                        <input type="password" wire:model="password"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
 
-                {{-- Campo: E-mail --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">E-mail</label>
-                    <input type="email" wire:model.blur="email"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="seu@email.com">
-                    @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                {{-- Campo: Senha --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" wire:model.blur="password"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="Mínimo 8 caracteres">
-                    @error('password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                {{-- Campo: Confirmar Senha --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Confirmar Senha</label>
-                    <input type="password" wire:model.blur="password_confirmation"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                        placeholder="Repita a senha">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar
+                            Senha</label>
+                        <input type="password" wire:model="password_confirmation"
+                            class="w-full mt-1 rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-sm mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove>Finalizar Cadastro</span>
+                    class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg shadow-green-500/30 transform hover:-translate-y-0.5 mt-4">
+                    <span wire:loading.remove>Criar Conta</span>
                     <span wire:loading>Salvando...</span>
                 </button>
             </form>
             @endif
 
-            {{-- Botões de Navegação Auxiliares --}}
-            <div class="mt-6 flex flex-col gap-3 text-center border-t border-gray-100 pt-6">
+            <div class="mt-8 text-center">
                 <button wire:click="toggleMode"
-                    class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition">
-                    {{ $isRegisterMode ? 'Já tenho conta? Fazer Login' : 'Não tem conta? Criar conta nova' }}
+                    class="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 transition underline underline-offset-4">
+                    {{ $isRegisterMode ? 'Já tenho conta? Fazer Login' : 'Não tem conta? Cadastre-se grátis' }}
                 </button>
-
-                <a href="{{ route('home') }}" wire:navigate
-                    class="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Voltar para a Loja
-                </a>
             </div>
         </div>
     </div>

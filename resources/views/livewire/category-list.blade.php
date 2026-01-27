@@ -1,106 +1,118 @@
-<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    
+<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
+
     <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-800">Gestão de Categorias</h2>
-        <p class="text-gray-500 text-sm">Organize os seus produtos com etiquetas coloridas.</p>
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Gestão de Categorias</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Organize os seus produtos com etiquetas coloridas.</p>
     </div>
 
     {{-- Mensagem de Sucesso --}}
     @if (session()->has('message'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-            <p>{{ session('message') }}</p>
-        </div>
+    <div class="bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500 text-green-700 dark:text-green-400 p-4 mb-6 rounded shadow-sm"
+        role="alert">
+        <p>{{ session('message') }}</p>
+    </div>
     @endif
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        {{-- COLUNA 1: FORMULÁRIO (Ocupa 1/3 da tela) --}}
+
+        {{-- COLUNA 1: FORMULÁRIO --}}
         <div class="md:col-span-1">
-            <div class="bg-white shadow-md rounded-lg p-6 sticky top-6">
-                <h3 class="text-lg font-semibold mb-4 border-b pb-2">
+            <div
+                class="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6 sticky top-24 border border-gray-100 dark:border-gray-800 transition-colors">
+                <h3
+                    class="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-800 pb-2">
                     {{ $editingCategory ? 'Editar Categoria' : 'Nova Categoria' }}
                 </h3>
 
-                <form wire:submit="save">
+                <form wire:submit="save" class="space-y-4">
                     {{-- Nome --}}
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                        <input type="text" wire:model="name" placeholder="Ex: Periféricos" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome</label>
+                        <input type="text" wire:model="name" placeholder="Ex: Periféricos"
+                            class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-brand-500 transition">
                         @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Cor --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Cor da Etiqueta</label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" wire:model="color" class="h-10 w-14 p-0 border-0 rounded cursor-pointer shadow-sm">
-                            <span class="text-gray-500 text-sm font-mono bg-gray-100 px-2 py-1 rounded">
-                                {{ $color }}
-                            </span>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cor da
+                            Etiqueta</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" wire:model="color"
+                                class="h-10 w-14 rounded cursor-pointer border-0 p-0 bg-transparent">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ $color }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Essa cor aparecerá nos cards dos produtos.</p>
                         @error('color') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Botões --}}
-                    <div class="flex flex-col gap-2">
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition flex justify-center items-center gap-2">
-                            <span wire:loading wire:target="save" class="animate-spin">⌛</span>
-                            {{ $editingCategory ? 'Atualizar' : 'Cadastrar' }}
-                        </button>
-
+                    <div class="flex justify-end pt-2 gap-2">
                         @if($editingCategory)
-                            <button type="button" wire:click="cancel" class="w-full bg-gray-100 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-200 transition">
-                                Cancelar Edição
-                            </button>
+                        <button type="button" wire:click="cancel"
+                            class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">
+                            Cancelar
+                        </button>
                         @endif
+                        <button type="submit"
+                            class="bg-brand-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-brand-700 transition shadow-lg shadow-brand-500/30">
+                            {{ $editingCategory ? 'Atualizar' : 'Salvar' }}
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        {{-- COLUNA 2: LISTA (Ocupa 2/3 da tela) --}}
+        {{-- COLUNA 2: LISTA (Ocupa 2/3) --}}
         <div class="md:col-span-2">
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+            <div
+                class="bg-white dark:bg-gray-900 shadow-lg rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transition-colors">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Etiqueta</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Cor
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Nome
+                            </th>
+                            <th scope="col" class="relative px-6 py-4">
+                                <span class="sr-only">Ações</span>
+                            </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                         @forelse($categories as $category)
-                            <tr class="hover:bg-gray-50 transition">
-                                {{-- Visual da Etiqueta --}}
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white shadow-sm" style="background-color: {{ $category->color }}">
-                                        {{ $category->name }}
-                                    </span>
-                                </td>
-                                
-                                {{-- Nome Texto --}}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    {{ $category->name }}
-                                </td>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="inline-block w-6 h-6 rounded-full shadow-sm border border-gray-200 dark:border-gray-700"
+                                    style="background-color: {{ $category->color }};"></span>
+                            </td>
 
-                                {{-- Botões de Ação --}}
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button wire:click="edit({{ $category->id }})" class="text-indigo-600 hover:text-indigo-900 mr-4 font-semibold">
-                                        Editar
-                                    </button>
-                                    <button wire:click="delete({{ $category->id }})" wire:confirm="Tem certeza? Os produtos dessa categoria ficarão 'Sem Categoria'." class="text-red-600 hover:text-red-900 font-semibold">
-                                        Excluir
-                                    </button>
-                                </td>
-                            </tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $category->name }}
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button wire:click="edit({{ $category->id }})"
+                                    class="text-brand-600 dark:text-brand-400 hover:text-brand-900 dark:hover:text-brand-200 mr-4 font-semibold transition">
+                                    Editar
+                                </button>
+                                <button wire:click="delete({{ $category->id }})"
+                                    wire:confirm="Tem certeza? Os produtos ficarão 'Sem Categoria'."
+                                    class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-200 font-semibold transition">
+                                    Excluir
+                                </button>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="3" class="px-6 py-12 text-center text-gray-500">
-                                    Nenhuma categoria encontrada. Use o formulário ao lado para criar a primeira! 🚀
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="3" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                Nenhuma categoria encontrada. Crie a primeira ao lado! 🚀
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>

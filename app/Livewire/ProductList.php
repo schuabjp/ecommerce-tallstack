@@ -7,7 +7,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Product;
 use Livewire\Component;
-use Livewire\WithPagination; // <--- Não esqueça de importar
+use Livewire\WithPagination;
 
 class ProductList extends Component
 {
@@ -15,15 +15,28 @@ class ProductList extends Component
 
     public $search = '';
 
-    public $category_id = ''; // Filtro de categoria
+    public $category_id = '';
 
-    // Reinicia a paginação quando filtra
+    public $min_price = '';
+
+    public $max_price = '';
+
     public function updatedSearch()
     {
         $this->resetPage();
     }
 
     public function updatedCategoryId()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMinPrice()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMaxPrice()
     {
         $this->resetPage();
     }
@@ -40,21 +53,30 @@ class ProductList extends Component
 
     public function render()
     {
-        $query = Product::query();
+        $query = Product::query()->with('category'); // Otimização
 
-        // Filtro de Texto
+        // 1. Filtro de Texto
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
         }
 
-        // Filtro de Categoria
+        // 2. Filtro de Categoria
         if ($this->category_id) {
             $query->where('category_id', $this->category_id);
         }
 
+        // 3. Filtro de Preço Mínimo
+        if ($this->min_price) {
+            $query->where('price', '>=', $this->min_price);
+        }
+
+        // 4. Filtro de Preço Máximo
+        if ($this->max_price) {
+            $query->where('price', '<=', $this->max_price);
+        }
+
         return view('livewire.product-list', [
             'products'   => $query->latest()->paginate(9),
-            // Passamos as categorias para preencher o select de filtro
             'categories' => Category::all(),
         ]);
     }
