@@ -7,15 +7,15 @@ namespace App\Enums;
 enum UserRole: string
 {
     case ADMIN = 'admin';
-    case SELLER = 'seller';
     case CUSTOMER = 'customer';
+    case SELLER = 'seller';
 
     public function label(): string
     {
-        return match ($this) {
+        return match($this) {
             self::ADMIN    => 'Administrador',
-            self::SELLER   => 'Vendedor',
             self::CUSTOMER => 'Cliente',
+            self::SELLER   => 'Vendedor',
         };
     }
 }
